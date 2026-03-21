@@ -373,4 +373,33 @@ My stupid boss still prefers SVN.
 
 == 远程仓库
 
+*创建SSH Key*：
 
+第1步：创建SSH Key。在用户主目录下，看看有没有.ssh目录，如果有，再看看这个目录下有没有*id_rsa*和*id_rsa.pub*这两个文件，如果已经有了，可直接跳到下一步。如果没有，打开Shell（Windows下打开Git Bash），创建SSH Key：
+
+```bash
+$ ssh-keygen -t rsa -C "youremail@example.com"
+```
+如果一切顺利的话，可以在用户主目录里找到.ssh目录，里面有*id_rsa*和*id_rsa.pub*两个文件，这两个就是SSH Key的秘钥对，*id_rsa*是私钥，不能泄露出去，*id_rsa.pub*是公钥，可以放心地告诉任何人。
+
+第2步：登陆GitHub，打开“Account settings”，“SSH Keys”页面：
+
+然后，点“Add SSH Key”，填上任意Title，在Key文本框里粘贴*id_rsa.pub*文件的内容。
+
+=== 添加远程库
+
+要关联一个远程库，使用命令```bash git remote add origin git@server-name:path/repo-name.git```；
+
+关联一个远程库时必须给远程库指定一个名字，`origin`是默认习惯命名；
+
+关联后，使用命令```bash git push -u origin master```第一次推送master分支的所有内容；
+
+此后，每次本地提交后，只要有必要，就可以使用命令```bash git push origin master```推送最新修改；
+
+如果添加的时候地址写错了，或者就是想删除远程库，可以用```bash git remote rm <name>```命令。使用前，建议先用```bash git remote -v```查看远程库信息
+
+=== 从远程库克隆
+
+要克隆一个仓库，首先必须知道仓库的地址，然后使用```bash git clone```命令克隆。
+
+Git支持多种协议，包括https，但ssh协议速度最快。
