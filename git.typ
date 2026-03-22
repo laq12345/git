@@ -549,3 +549,158 @@ git switch master
   )
 ]
 
+=== 解决冲突
+
+Git用<<<<<<<，=======，>>>>>>>标记出不同分支的内容。
+
+带参数的```bash git log```也可以看到分支的合并情况：
+```bash
+$ git log --graph --pretty=oneline --abbrev-commit
+*   cf810e4 (HEAD -> master) conflict fixed
+|\
+| * 14096d0 (feature1) AND simple
+* | 5dc6824 & simple
+|/
+* b17d20e branch test
+* d46f35e (origin/master) remove test.txt
+* b84166e add test.txt
+* 519219b git tracks changes
+* e43a48b understand how stage works
+* 1094adb append GPL
+* e475afc add distributed
+* eaadf4e wrote a readme file
+```
+
+#tip[当Git无法自动合并分支时，就必须首先解决冲突。解决冲突后，再提交，合并完成。
+
+  解决冲突就是把Git合并失败的文件手动编辑为我们希望的内容，再提交。
+
+  用```bash git log --graph```命令可以看到分支合并图。]
+
+=== 分支管理策略
+
+通常，合并分支时，如果可能，Git会用Fast forward模式，但这种模式下，删除分支后，会丢掉分支信息。
+
+如果要强制禁用Fast forward模式，Git就会在merge时生成一个新的commit，这样，从分支历史上就可以看出分支信息。
+
+准备合并`dev`分支，请注意`--no-ff`参数，表示禁用Fast forward
+
+```bash
+$ git merge --no-ff -m "merge with no-ff" dev
+Merge made by the 'recursive' strategy.
+ readme.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+$ git log --graph --pretty=oneline --abbrev-commit
+*   e1e9c68 (HEAD -> master) merge with no-ff
+|\
+| * f52c633 (dev) add merge
+|/
+*   cf810e4 conflict fixed
+...
+
+```
+
+=== Bug分支
+#figure(
+  table(
+    columns: (auto, auto, 1fr),
+    inset: 8pt,
+    stroke: 1pt + black,
+    align: left + horizon,
+
+    // --- 表头 ---
+    [场景], [命令], [说明],
+
+    // --- 数据行 ---
+    [暂存所有修改], [```bash git stash```], [将工作区和暂存区的修改存入栈中，工作区恢复干净。],
+
+    [暂存并命名], [```bash git stash push -m "描述"```], [给这次暂存起个名字，方便后续查找（推荐）。],
+
+    [查看暂存列表], [```bash git stash list```], [显示所有暂存的记录（如 #raw("stash@{0}"), #raw("stash@{1}")）。],
+
+    [恢复最近一次], [```bash git stash pop```], [恢复最新的暂存，并从栈中删除该记录。],
+
+    [恢复指定某次], [```bash git stash apply stash@{1}```], [恢复指定的暂存，但保留在栈中（不删除）。],
+
+    [丢弃暂存], [```bash git stash drop stash@{1}```], [删除指定的暂存记录。],
+
+    [清空所有暂存], [```bash git stash clear```], [删除所有暂存记录（慎用）。],
+  ),
+  caption: [```bash git stash```常用命令],
+)
+#figure(
+  table(
+    columns: (auto, auto, 1fr),
+    inset: 8pt,
+    stroke: 1pt + black,
+    align: left + horizon,
+
+    // --- 表头 ---
+    [场景], [命令], [说明],
+
+    // --- 数据行 ---
+    [应用单个提交], [```bash git cherry-pick <commit-hash>```], [将指定 commit 的变更应用到当前分支。],
+
+    [应用多个提交], [```bash git cherry-pick <hash1> <hash2>```], [按顺序应用多个独立的提交。],
+
+    [应用连续范围],
+    [```bash git cherry-pick <start>^..<end>```],
+    [应用从 start 到 end 的范围（注意 #raw("^") 表示包含 start）。],
+
+    [只暂存不提交],
+    [```bash git cherry-pick -n <hash>```],
+    [#raw("-n") (no-commit)：应用变更但不自动 commit，方便修改后再提交。],
+
+    [保留来源信息],
+    [```bash git cherry-pick -x <hash>```],
+    [#raw("-x")：在 commit 信息中自动添加 #raw("(cherry picked from commit ...)")。],
+
+    [结束冲突], [```bash git cherry-pick --continue```], [解决冲突后，继续执行剩余的 cherry-pick。],
+
+    [放弃操作], [```bash git cherry-pick --abort```], [终止当前的 cherry-pick 过程，恢复原状。],
+  ),
+  caption: [```bash git cherry-pick```常用命令],
+)
+
+#tip[修复bug时，我们会通过创建新的bug分支进行修复，然后合并，最后删除；
+
+  当手头工作没有完成时，先把工作现场git stash一下，然后去修复bug，修复后，再git stash pop，回到工作现场；
+
+  在master分支上修复的bug，想要合并到当前dev分支，可以用git cherry-pick <commit>命令，把bug提交的修改“复制”到当前分支，避免重复劳动。]
+
+=== Feature分支
+
+#tip[开发一个新功能，最好新建一个分支；
+
+  如果要丢弃一个没有被合并过的分支，可以通过```bash git branch -D <name>```强行删除。]
+
+=== 多人协作
+
+*多人协作的工作模式*通常是这样：
+
++ 首先，可以尝试用```bash git push origin <branch-name>```推送自己的修改；
++ 如果推送失败，则因为远程分支比你的本地更新，需要先用```bash git pull```试图合并；
++ 如果合并有冲突，则解决冲突，并在本地提交；
++ 没有冲突或者解决掉冲突后，再用```bash git push origin <branch-name>```推送就能成功！
+
+如果```bash git pull```提示no tracking information，则说明本地分支和远程分支的链接关系没有创建，用命令```bash git branch --set-upstream-to <branch-name> origin/<branch-name>```。
+
+#tip[
+  - 查看远程库信息，使用```bash git remote -v```；
+  - 本地新建的分支如果不推送到远程，对其他人就是不可见的；
+  - 从本地推送分支，使用```bash git push origin branch-name```，如果推送失败，先用```bash git pull```抓取远程的新提交；
+  - 在本地创建和远程分支对应的分支，使用```bash git checkout -b branch-name origin/branch-name```，本地和远程分支的名称最好一致；
+  - 建立本地分支和远程分支的关联，使用```bash git branch --set-upstream branch-name origin/branch-name```；
+  - 从远程抓取分支，使用```bash git pull```，如果有冲突，要先处理冲突。
+]
+
+=== Rebase
+
+
+- rebase操作可以把本地未push的分叉提交历史整理成直线；
+- rebase的目的是使得我们在查看历史提交的变化时更容易，因为分叉的提交需要三方对比。
+
+== 标签管理
+
+
