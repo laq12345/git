@@ -403,3 +403,149 @@ $ ssh-keygen -t rsa -C "youremail@example.com"
 要克隆一个仓库，首先必须知道仓库的地址，然后使用```bash git clone```命令克隆。
 
 Git支持多种协议，包括https，但ssh协议速度最快。
+
+== 分支管理
+
+=== 创建与合并分支
+
+创建并切换到`dev`分支：
+```bash
+$ git checkout -b dev
+Switched to a new branch 'dev'
+```
+```bash git checkout -b dev```相当于以下两条命令：
+```bash
+git branch dev
+git checkout dev
+```
+用```bash git branch```命令查看当前分支：
+```bash
+$ git branch
+* dev
+  master
+```
+```bash git merge```命令用于合并指定分支到当前分支。
+
+```bash
+$ git checkout master
+Switched to branch 'master'
+
+$ git merge dev
+Updating d46f35e..b17d20e
+Fast-forward
+ readme.txt | 1 +
+ 1 file changed, 1 insertion(+)
+```
+删除`dev`分支：```bash git branch -d dev```
+```bash
+$ git branch -d dev
+Deleted branch dev (was b17d20e).
+$ git branch
+* master
+```
+此外，创建并切换到新的`dev`分支还可以使用：
+```bash
+git switch -c dev
+```
+直接切换到已有的`master`分支，可以使用：
+```bash
+git switch master
+```
+#memo[
+  查看分支：```bash git branch```
+
+  创建分支：```bash git branch <name>```
+
+  切换分支：```bash git checkout <name>```或者```bash git switch <name>```
+
+  创建+切换分支：```bash git checkout -b <name>```或者```bash git switch -c <name>```
+
+  合并某分支到当前分支：```bash git merge <name>```
+
+  删除分支：```bash git branch -d <name>```
+]
+
+#clue(
+  title: [#text(
+    font: "Noto Serif CJK SC",
+  )[建议使用```bash git switch```和```bash git restore```代替```bash git checkout```]],
+  accent-color: gradient.linear(red, blue, dir: ttb),
+  header-color: gradient.linear(red, yellow, blue),
+  border-color: blue.darken(40%),
+  body-color: yellow.lighten(80%),
+  title-font: "Liberation Mono",
+  title-weight-delta: 300,
+)[
+
+
+  = Git Switch 用法
+
+  #table(
+    columns: (auto, auto, 1fr),
+    // 第三列自动占据剩余空间
+    inset: 8pt,
+    // 单元格内边距
+    stroke: 1pt + black,
+    // 表格边框
+    align: left + horizon,
+    // 内容左对齐且垂直居中
+
+    // --- 表头 ---
+    [场景], [命令示例], [说明],
+
+    // --- 数据行 ---
+    [切换分支], [```bash git switch <分支名>```], [切换到已存在的分支 (如 ```bash git switch main```)],
+
+    [切回上一个], [```bash git switch -```], [快速在最近两个分支间切换 (类似 ```bash cd -```)],
+
+    [创建并切换], [```bash git switch -c <新分支名>```], [-c 代表 create。等价于旧版的 ```bash git checkout -b```],
+
+    [基于远程创建],
+    [```bash git switch <远程分支名>```],
+    [若本地不存在，自动创建并跟踪远程分支 (如 ```bash git switch origin/feat-1```)],
+
+    [强制切换], [```bash git switch -f <分支名>```], [丢弃当前未提交的修改，强制切换 (慎用！)],
+
+    [分离头指针], [```bash git switch --detach <commit-id>```], [进入临时查看历史版本的状态],
+  )
+
+  = Git Restore用法
+
+  #table(
+    columns: (auto, auto, 1fr),
+    inset: 8pt,
+    stroke: 1pt + black,
+    align: left + horizon,
+
+    // --- 表头 ---
+    [场景], [命令示例], [说明],
+
+    // --- 数据行 ---
+    [撤销工作区修改],
+    [```bash git restore <文件名>```],
+    [
+      丢弃工作区的修改，恢复到最近一次 `commit` 的状态。
+      #linebreak()
+      #emph[(等价于旧版 ```bash git checkout -- <file>```)]
+    ],
+
+    [撤销多个文件], [```bash git restore .```], [丢弃当前目录下所有未提交的修改 (高危操作)],
+
+    [取消暂存 (Unstage)],
+    [```bash git restore --staged <文件名>```],
+    [
+      将文件从“暂存区”移回“工作区”，保留修改内容。
+      #linebreak()
+      #emph[(等价于旧版 ```bash git reset HEAD <file>```)]
+    ],
+
+    [指定版本恢复],
+    [```bash git restore -s <版本> <文件>```],
+    [
+      #raw("-s") (source) 指定从哪个 commit/branch 恢复文件。
+      #linebreak()
+      例：```bash git restore -s main config.js``` (用 main 分支的版本覆盖当前文件)
+    ],
+  )
+]
+
