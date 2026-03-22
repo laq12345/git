@@ -1,9 +1,18 @@
+#import "@preview/minimal-note:0.10.0": minimal-note
+
+#show: minimal-note.with(
+  title: [Git],
+  author: [Smile Fox],
+  date: datetime.today().display("[year]年[month repr:numerical]月[day]日"),
+)
+
+
+
+
 #import "@preview/gentle-clues:1.3.1": *
 #set text(font: "Noto Serif CJK SC", lang: "zh")
 
-= Git笔记
-
-== 创建版本库
+= 创建版本库
 
 ```bash git init```: 把个目录变成Git可以管理的仓库：
 
@@ -11,7 +20,7 @@
 $ git init
 Initialized empty Git repository in /Users/michael/learngit/.git/
 ```
-=== 把文件添加到版本库
+== 把文件添加到版本库
 
 创建一个readme.text文件：
 ```bash
@@ -31,7 +40,7 @@ $ git commit -m "wrote a readme file"
  create mode 100644 readme.txt
 ```
 ```bash git commit```命令，`-m`后面输入的是本次提交的说明。
-== 时光机穿梭
+= 时光机穿梭
 
 修改readme.txt文件：
 ```bash
@@ -68,7 +77,7 @@ index 46d49bf..9247db6 100644
   - 如果git status告诉你有文件被修改过，用git diff可以查看修改内容。
 ]
 
-=== 版本回退
+== 版本回退
 
 修改readme.txt并提交：
 
@@ -150,7 +159,7 @@ eaadf4e HEAD@{4}: commit (initial): wrote a readme file
   - 要重返未来，用```bash git reflog```查看命令历史，以便确定要回到未来的哪个版本。
 ]
 
-=== 工作暂存区
+== 工作暂存区
 
 *工作区*：项目的工作目录
 
@@ -164,7 +173,7 @@ Git的版本库里存了很多东西，其中最重要的就是称为stage（或
 
 + 第二步是用```bash git commit```提交更改，实际上就是把暂存区的所有内容提交到当前分支。
 
-=== 管理修改
+== 管理修改
 
 每次修改，如果不用```bash git add```到暂存区，那就不会加入到commit中。
 
@@ -211,7 +220,7 @@ Git的版本库里存了很多东西，其中最重要的就是称为stage（或
   ],
 )
 
-=== 撤销修改
+== 撤销修改
 
 假如在readme.txt中添加了一行：
 ```bash
@@ -322,7 +331,7 @@ My stupid boss still prefers SVN.
   ],
 )
 
-=== 删除文件
+== 删除文件
 
 #table(
   columns: 3,
@@ -371,7 +380,7 @@ My stupid boss still prefers SVN.
   ],
 )
 
-== 远程仓库
+= 远程仓库
 
 *创建SSH Key*：
 
@@ -386,7 +395,7 @@ $ ssh-keygen -t rsa -C "youremail@example.com"
 
 然后，点“Add SSH Key”，填上任意Title，在Key文本框里粘贴*id_rsa.pub*文件的内容。
 
-=== 添加远程库
+== 添加远程库
 
 要关联一个远程库，使用命令```bash git remote add origin git@server-name:path/repo-name.git```；
 
@@ -398,15 +407,15 @@ $ ssh-keygen -t rsa -C "youremail@example.com"
 
 如果添加的时候地址写错了，或者就是想删除远程库，可以用```bash git remote rm <name>```命令。使用前，建议先用```bash git remote -v```查看远程库信息
 
-=== 从远程库克隆
+== 从远程库克隆
 
 要克隆一个仓库，首先必须知道仓库的地址，然后使用```bash git clone```命令克隆。
 
 Git支持多种协议，包括https，但ssh协议速度最快。
 
-== 分支管理
+= 分支管理
 
-=== 创建与合并分支
+== 创建与合并分支
 
 创建并切换到`dev`分支：
 ```bash
@@ -478,7 +487,7 @@ git switch master
 )[
 
 
-  = Git Switch 用法
+  === Git Switch 用法
 
   #table(
     columns: (auto, auto, 1fr),
@@ -509,7 +518,7 @@ git switch master
     [分离头指针], [```bash git switch --detach <commit-id>```], [进入临时查看历史版本的状态],
   )
 
-  = Git Restore用法
+  === Git Restore用法
 
   #table(
     columns: (auto, auto, 1fr),
@@ -549,7 +558,7 @@ git switch master
   )
 ]
 
-=== 解决冲突
+== 解决冲突
 
 Git用<<<<<<<，=======，>>>>>>>标记出不同分支的内容。
 
@@ -577,7 +586,7 @@ $ git log --graph --pretty=oneline --abbrev-commit
 
   用```bash git log --graph```命令可以看到分支合并图。]
 
-=== 分支管理策略
+== 分支管理策略
 
 通常，合并分支时，如果可能，Git会用Fast forward模式，但这种模式下，删除分支后，会丢掉分支信息。
 
@@ -601,7 +610,7 @@ $ git log --graph --pretty=oneline --abbrev-commit
 
 ```
 
-=== Bug分支
+== Bug分支
 #figure(
   table(
     columns: (auto, auto, 1fr),
@@ -669,13 +678,13 @@ $ git log --graph --pretty=oneline --abbrev-commit
 
   在master分支上修复的bug，想要合并到当前dev分支，可以用git cherry-pick <commit>命令，把bug提交的修改“复制”到当前分支，避免重复劳动。]
 
-=== Feature分支
+== Feature分支
 
 #tip[开发一个新功能，最好新建一个分支；
 
   如果要丢弃一个没有被合并过的分支，可以通过```bash git branch -D <name>```强行删除。]
 
-=== 多人协作
+== 多人协作
 
 *多人协作的工作模式*通常是这样：
 
@@ -695,7 +704,7 @@ $ git log --graph --pretty=oneline --abbrev-commit
   - 从远程抓取分支，使用```bash git pull```，如果有冲突，要先处理冲突。
 ]
 
-=== Rebase
+== Rebase
 
 
 - rebase操作可以把本地未push的分叉提交历史整理成直线；
@@ -704,3 +713,127 @@ $ git log --graph --pretty=oneline --abbrev-commit
 == 标签管理
 
 
+== Git Tag 查看命令
+
+#table(
+  columns: (1fr, 2fr),
+  [命令], [说明],
+  [```bash git tag```], [列出所有标签],
+  [```bash git tag -l "v1.\*"```], [模糊匹配列出（如所有 v1 开头的版本）],
+  [```bash git tag -n```], [列出标签及其附注信息（一行显示）],
+  [```bash git tag -n3```], [列出标签及附注的前 3 行],
+)
+
+== Git Tag 创建类型
+
+#table(
+  columns: (1fr, 1.5fr, 2fr),
+  [类型], [命令], [特点],
+  [轻量标签], [```bash git tag v1.0-lite```], [仅指向 Commit 哈希，无额外元数据（类似分支）],
+  [附注标签 ⭐], [```bash git tag -a v1.0 -m "发布说明"```], [推荐。包含打标签人、时间、GPG 签名及消息],
+  [指定提交], [```bash git tag -a v1.0 <commit-id> -m "..."```], [给历史某次提交补打标签],
+)
+
+== Git Tag 推送与同步
+
+#table(
+  columns: (1fr, 2fr),
+  [命令], [说明],
+  [```bash git push origin v1.0```], [推送单个标签到远程],
+  [```bash git push origin --tags```], [推送所有本地标签到远程],
+  [```bash git fetch --tags```], [从远程拉取所有新标签到本地],
+)
+
+== Git Tag 删除操作
+
+#table(
+  columns: (1fr, 2fr),
+  [命令], [说明],
+  [```bash git tag -d v1.0```], [删除本地标签],
+  [```bash git push origin --delete v1.0```], [删除远程标签],
+)
+
+== Git Show 基础查看
+
+#table(
+  columns: (1fr, 2fr),
+  [命令], [说明],
+  [```bash git show```], [查看最近一次提交的详细信息 + 代码变更],
+  [```bash git show <commit-id>```], [查看指定提交的详情],
+  [```bash git show v1.0```], [查看标签详情（若是附注标签，先显标签信息，再显提交内容）],
+)
+
+= 使用Gitee
+
+待整理......
+
+= 自定义Git
+
+== 忽略特殊文件
+
+在Git工作区的根目录下创建一个特殊的`.gitignore`文件，然后把要忽略的文件名填进去，Git就会自动忽略这些文件。
+
+如果想添加`.gitignore`中的文件，可以用`-f`强制添加到Git：
+```bash
+$ git add -f App.class
+```
+如果觉得可能是`.gitignore`写得有问题，需要找出来到底哪个规则写错了，可以用```bash git check-ignore```命令检查
+
+*`.gitignore`的用法*
+#table(
+  columns: (auto, auto, auto, 1fr),
+  // 第四列设置为 1fr 以占据剩余空间
+  inset: 8pt,
+  // 单元格内边距
+  stroke: (bottom: 1pt + black),
+  // 底部边框
+  [*符号/格式*], [*含义*], [*示例*], [*说明*],
+
+  // 1. 空行
+  [空行], [无意义，仅作分隔], [(空行)], [为了提高可读性，可以随意添加空行。],
+
+  // 2. # 注释 (注意转义 #)
+  [\#], [注释], [`# 这是一个注释`], [以 \# 开头的行会被忽略。如果要匹配以 \# 开头的文件，需用 `\#` 转义。],
+
+  // 3. 文件名
+  [文件名],
+  [匹配当前目录下的文件],
+  [`config.json`],
+  [忽略根目录及所有子目录中名为 `config.json` 的文件（见下文“作用范围”）。],
+
+  // 4. 目录名/
+  [目录名/], [匹配目录], [`logs/`], [推荐写法。忽略所有名为 `logs` 的目录及其内容。末尾的 `/` 强调它是个文件夹。],
+
+  // 5. / (开头)
+  [\/ (开头)], [仅匹配根目录], [`/dist/`], [只忽略项目根目录下的 `dist` 文件夹，子目录里的 `dist` 不会被忽略。],
+
+  // 6. * 通配符 (注意转义 *)
+  [\*],
+  [通配符（任意字符）],
+  [`*.log`],
+  [
+    忽略所有后缀为 `.log` 的文件。\
+    `*` 不能匹配路径分隔符 `/`。
+  ],
+
+  // 7. ? 通配符
+  [?], [单字符通配符], [`image?.png`], [匹配 `image1.png`, `imageA.png`，但不匹配 `image10.png`。],
+
+  // 8. [abc] 字符集合
+  [[abc]], [字符集合], [`temp[abc].txt`], [匹配 `tempa.txt`, `tempb.txt`, `tempc.txt`。],
+
+  // 9. ! 取反
+  [!], [取反（例外）], [`!important.log`], [强制包含之前被忽略的文件。必须放在忽略规则之后。],
+
+  // 10. **/ 递归匹配 (注意转义 *)
+  [\*\*/], [匹配任意层级目录], [`**/node_modules/`], [匹配任何层级的 `node_modules` 文件夹（无论它在多深的子目录里）。],
+)
+
+== 配置别名
+
+略
+https://liaoxuefeng.com/books/git/customize/alias/index.html
+
+== 搭建Git服务器
+
+略
